@@ -1,0 +1,449 @@
+<html>
+<head>
+    <title>Meteor Oyunu</title>
+    <style>
+        body { background-color: #1a1a1a; }
+        canvas { background-color: #000; display: block; margin: 20px auto; }
+    </style>
+</head>
+<body>
+    <canvas id="alan" width="900" height="800" style="border:2px solid #fff;"></canvas>
+    
+    <script>
+        var c = document.getElementById("alan");
+        var ctx = c.getContext("2d");
+        
+        var sol = false;
+        var sag = false;
+        var ust = false;
+        var alt = false;
+        var ates = false;
+        var ateszamani = 5;
+        var donus = Math.PI;
+        
+        var cizgi = { x: 0, y: 0 };
+        
+        var gemim = {
+            x: 380,
+            y: 380,
+            speed: 0.1,
+            currentspeed: 0,
+            maxspeed: 7
+        };
+        
+        var Ymeteor = [];
+        var Zmermi = [];
+        var Kmeteor = [];
+        var Cizgiler = [];  // Çarpışma efektleri
+        
+        // Initialize meteors
+        for (var i = 0; i < 5; i++) {
+            var meteorb = {
+                x: Math.random() * 800,
+                y: Math.random() * 800,
+                xspeed: -1 + Math.random() * 2,
+                yspeed: -1 + Math.random() * 2
+            };
+            Ymeteor.push(meteorb);
+        }
+        
+        function get_random_renk() {
+            var rsay = '0123456789ABCDEF'.split('');
+            var renk = '#';
+            for (var i = 0; i < 6; i++) {
+                renk += rsay[Math.floor(Math.random() * 16)];
+            }
+            return renk;
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, 900, 800);
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, 900, 800);
+            
+            // Draw ship - Modern space ship design
+            ctx.save();
+            ctx.translate(gemim.x, gemim.y);
+            ctx.rotate(donus);
+            
+            // Main body
+            ctx.fillStyle = "#00ccff";
+            ctx.strokeStyle = "#0099ff";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, -20);
+            ctx.lineTo(12, 15);
+            ctx.lineTo(8, 20);
+            ctx.lineTo(-8, 20);
+            ctx.lineTo(-12, 15);
+            ctx.lineTo(0, -20);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Left wing
+            ctx.fillStyle = "#0088ff";
+            ctx.beginPath();
+            ctx.moveTo(-3, 0);
+            ctx.lineTo(-15, 5);
+            ctx.lineTo(-12, 15);
+            ctx.lineTo(-3, 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Right wing
+            ctx.beginPath();
+            ctx.moveTo(3, 0);
+            ctx.lineTo(15, 5);
+            ctx.lineTo(12, 15);
+            ctx.lineTo(3, 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Cabin/Cockpit
+            ctx.fillStyle = "#ffff00";
+            ctx.beginPath();
+            ctx.arc(0, -8, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "#ffaa00";
+            ctx.stroke();
+            
+            // Engine glow effect
+            ctx.fillStyle = "rgba(0, 255, 100, 0.6)";
+            ctx.beginPath();
+            ctx.moveTo(-4, 18);
+            ctx.lineTo(4, 18);
+            ctx.lineTo(3, 25);
+            ctx.lineTo(-3, 25);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+            
+            // Draw big meteors - Realistic asteroid style
+            for (var i = 0; i < Ymeteor.length; i++) {
+                if (Ymeteor[i] != "belirsiz") {
+                    ctx.save();
+                    ctx.translate(Ymeteor[i].x, Ymeteor[i].y);
+                    
+                    // Rotate meteor
+                    if (!Ymeteor[i].rotation) Ymeteor[i].rotation = 0;
+                    Ymeteor[i].rotation += 0.02;
+                    ctx.rotate(Ymeteor[i].rotation);
+                    
+                    // Draw rocky meteor
+                    ctx.fillStyle = "#664d33";
+                    ctx.strokeStyle = "#997700";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(-18, -8);
+                    ctx.lineTo(-12, -18);
+                    ctx.lineTo(8, -16);
+                    ctx.lineTo(16, -6);
+                    ctx.lineTo(18, 8);
+                    ctx.lineTo(12, 18);
+                    ctx.lineTo(-8, 16);
+                    ctx.lineTo(-16, 6);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Add rocky texture spots
+                    ctx.fillStyle = "#4d3d26";
+                    ctx.beginPath();
+                    ctx.arc(-8, -6, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(6, 4, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(-2, 10, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                    
+                    Ymeteor[i].x += Ymeteor[i].xspeed;
+                    Ymeteor[i].y += Ymeteor[i].yspeed;
+                    
+                    if (Ymeteor[i].x <= -20) Ymeteor[i].x = 920;
+                    if (Ymeteor[i].x >= 920) Ymeteor[i].x = -20;
+                    if (Ymeteor[i].y >= 820) Ymeteor[i].y = -20;
+                    if (Ymeteor[i].y <= -20) Ymeteor[i].y = 820;
+                }
+            }
+            
+            // Draw small meteors - Realistic asteroid style
+            for (var m = 0; m < Kmeteor.length; m++) {
+                if (Kmeteor[m] != "belirsiz") {
+                    ctx.save();
+                    ctx.translate(Kmeteor[m].x, Kmeteor[m].y);
+                    
+                    // Rotate meteor
+                    if (!Kmeteor[m].rotation) Kmeteor[m].rotation = 0;
+                    Kmeteor[m].rotation += 0.03;
+                    ctx.rotate(Kmeteor[m].rotation);
+                    
+                    // Draw small rocky meteor
+                    ctx.fillStyle = "#8B6F47";
+                    ctx.strokeStyle = "#AA8844";
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(-10, -4);
+                    ctx.lineTo(-6, -10);
+                    ctx.lineTo(4, -9);
+                    ctx.lineTo(10, -2);
+                    ctx.lineTo(10, 6);
+                    ctx.lineTo(6, 10);
+                    ctx.lineTo(-4, 9);
+                    ctx.lineTo(-10, 4);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Add rocky texture
+                    ctx.fillStyle = "#654321";
+                    ctx.beginPath();
+                    ctx.arc(-2, -2, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(4, 3, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                    
+                    Kmeteor[m].x += Kmeteor[m].xspeed;
+                    Kmeteor[m].y += Kmeteor[m].yspeed;
+                    
+                    if (Kmeteor[m].x <= -10) Kmeteor[m].x = 910;
+                    if (Kmeteor[m].x >= 910) Kmeteor[m].x = -10;
+                    if (Kmeteor[m].y >= 810) Kmeteor[m].y = -10;
+                    if (Kmeteor[m].y <= -10) Kmeteor[m].y = 810;
+                }
+            }
+            
+            // Draw bullets with glow effect
+            for (var j = 0; j < Zmermi.length; j++) {
+                if (Zmermi[j] != "belirsiz") {
+                    // Bullet glow
+                    ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
+                    ctx.beginPath();
+                    ctx.arc(Zmermi[j].x, Zmermi[j].y, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Main bullet
+                    ctx.fillStyle = "#ffff00";
+                    ctx.beginPath();
+                    ctx.arc(Zmermi[j].x, Zmermi[j].y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Bullet trail
+                    ctx.strokeStyle = "rgba(255, 255, 0, 0.6)";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(Zmermi[j].x, Zmermi[j].y);
+                    ctx.lineTo(Zmermi[j].x - Zmermi[j].xspeed * 15, Zmermi[j].y - Zmermi[j].yspeed * 15);
+                    ctx.stroke();
+                    
+                    Zmermi[j].x += Zmermi[j].xspeed * 6;
+                    Zmermi[j].y += Zmermi[j].yspeed * 6;
+                    
+                    if (Zmermi[j].x < 0 || Zmermi[j].x > 900 || Zmermi[j].y < 0 || Zmermi[j].y > 800) {
+                        Zmermi.splice(j, 1);
+                        j--;
+                    } else {
+                        // Check collision with big meteors
+                        for (var k = 0; k < Ymeteor.length; k++) {
+                            if (Ymeteor[k] != "belirsiz") {
+                                var dist = Math.sqrt(
+                                    Math.pow(Ymeteor[k].x - Zmermi[j].x, 2) + 
+                                    Math.pow(Ymeteor[k].y - Zmermi[j].y, 2)
+                                );
+                                if (dist < 25) {
+                                    // Create explosion effect
+                                    for (var e = 0; e < 8; e++) {
+                                        var angle = (Math.PI * 2 * e) / 8;
+                                        Cizgiler.push({
+                                            x: Ymeteor[k].x,
+                                            y: Ymeteor[k].y,
+                                            vx: Math.cos(angle) * 3,
+                                            vy: Math.sin(angle) * 3,
+                                            life: 20
+                                        });
+                                    }
+                                    
+                                    // Create small meteors
+                                    for (var s = 0; s < 3; s++) {
+                                        var mini = {
+                                            x: Ymeteor[k].x,
+                                            y: Ymeteor[k].y,
+                                            xspeed: -2 + Math.random() * 4,
+                                            yspeed: -2 + Math.random() * 4,
+                                            rotation: 0
+                                        };
+                                        Kmeteor.push(mini);
+                                    }
+                                    Ymeteor.splice(k, 1);
+                                    k--;
+                                    
+                                    if (j < Zmermi.length) {
+                                        Zmermi.splice(j, 1);
+                                        j--;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Check collision with small meteors
+                    for (var n = 0; n < Kmeteor.length; n++) {
+                        if (Kmeteor[n] != "belirsiz") {
+                            var dist2 = Math.sqrt(
+                                Math.pow(Kmeteor[n].x - Zmermi[j].x, 2) + 
+                                Math.pow(Kmeteor[n].y - Zmermi[j].y, 2)
+                            );
+                            if (dist2 < 15) {
+                                Kmeteor.splice(n, 1);
+                                if (j < Zmermi.length) {
+                                    Zmermi.splice(j, 1);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Update ship movement
+            if (sol) {
+                donus -= 0.05;
+            }
+            if (sag) {
+                donus += 0.05;
+            }
+            if (ust) {
+                if (gemim.currentspeed < gemim.maxspeed) {
+                    gemim.currentspeed += gemim.speed;
+                }
+            }
+            if (alt) {
+                if (gemim.currentspeed > 0) {
+                    gemim.currentspeed -= 0.1;
+                }
+            }
+            
+            // Apply ship movement
+            gemim.x += Math.sin(donus) * gemim.currentspeed;
+            gemim.y -= Math.cos(donus) * gemim.currentspeed;
+            
+            // Screen wrapping
+            if (gemim.x < -20) gemim.x = 920;
+            if (gemim.x > 920) gemim.x = -20;
+            if (gemim.y < -20) gemim.y = 820;
+            if (gemim.y > 820) gemim.y = -20;
+            
+            // Fire bullets with muzzle flash
+            if (ates && ateszamani >= 10) {
+                var mermi = {
+                    x: gemim.x,
+                    y: gemim.y,
+                    xspeed: Math.sin(donus),
+                    yspeed: -Math.cos(donus)
+                };
+                Zmermi.push(mermi);
+                
+                // Add muzzle flash effect
+                for (var ef = 0; ef < 3; ef++) {
+                    var flashAngle = donus + (Math.random() - 0.5) * 0.5;
+                    Cizgiler.push({
+                        x: gemim.x + Math.sin(donus) * 20,
+                        y: gemim.y - Math.cos(donus) * 20,
+                        vx: Math.cos(flashAngle) * 2,
+                        vy: Math.sin(flashAngle) * 2,
+                        life: 10
+                    });
+                }
+                
+                ateszamani = 0;
+            }
+            ateszamani++;
+            
+            // Draw explosion particles
+            for (var p = 0; p < Cizgiler.length; p++) {
+                var particle = Cizgiler[p];
+                ctx.fillStyle = "rgba(255, 200, 0, " + (particle.life / 20) + ")";
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life--;
+                
+                if (particle.life <= 0) {
+                    Cizgiler.splice(p, 1);
+                    p--;
+                }
+            }
+            
+            // Check collision with meteors
+            for (var i = 0; i < Ymeteor.length; i++) {
+                if (Ymeteor[i] != "belirsiz") {
+                    var distToShip = Math.sqrt(
+                        Math.pow(Ymeteor[i].x - gemim.x, 2) + 
+                        Math.pow(Ymeteor[i].y - gemim.y, 2)
+                    );
+                    if (distToShip < 25) {
+                        alert("Oyun Bitti! Büyük bir meteorla çarptınız!");
+                        location.reload();
+                    }
+                }
+            }
+            
+            for (var i = 0; i < Kmeteor.length; i++) {
+                if (Kmeteor[i] != "belirsiz") {
+                    var distToShip2 = Math.sqrt(
+                        Math.pow(Kmeteor[i].x - gemim.x, 2) + 
+                        Math.pow(Kmeteor[i].y - gemim.y, 2)
+                    );
+                    if (distToShip2 < 15) {
+                        alert("Oyun Bitti! Küçük bir meteorla çarptınız!");
+                        location.reload();
+                    }
+                }
+            }
+        }
+        
+        setInterval(draw, 1000 / 60);
+        
+        // Keyboard controls
+        document.onkeydown = function(evt) {
+            switch (evt.keyCode) {
+                case 37: sol = true; break;      // Left arrow
+                case 38: ust = true; break;      // Up arrow
+                case 39: sag = true; break;      // Right arrow
+                case 40: alt = true; break;      // Down arrow
+                case 32: ates = true; break;     // Space
+            }
+        };
+        
+        document.onkeyup = function(evt) {
+            switch (evt.keyCode) {
+                case 37: sol = false; break;
+                case 38: ust = false; break;
+                case 39: sag = false; break;
+                case 40: alt = false; break;
+                case 32: ates = false; break;
+            }
+        };
+    </script>
+    
+    <div style="color: #fff; text-align: center; margin-top: 20px;">
+        <h2>Meteor Oyunu</h2>
+        <p><strong>Kontroller:</strong></p>
+        <p>⬅️ ➡️ = Döndür | ⬆️ = İleri | ⬇️ = Geri | SPACE = Ateş Et</p>
+    </div>
+</body>
+</html>
