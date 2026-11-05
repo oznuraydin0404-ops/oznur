@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Web Sitesi</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Logo</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Ana Sayfa</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">Hakkımızda</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link">Hizmetler</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">İletişim</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Modern Web Sitesi</h1>
+                <p class="hero-description">
+                    Profesyonel ve modern web siteleri ile işinizi büyütün. 
+                    Responsive tasarım ve kullanıcı dostu arayüz.
+                </p>
+                <button class="cta-button">Başlayın</button>
+            </div>
+            <div class="hero-image">
+                <div class="hero-placeholder">
+                    <span>🚀</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Hakkımızda</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        Modern web teknolojileri kullanarak, kullanıcı deneyimini 
+                        ön planda tutan web siteleri geliştiriyoruz. 
+                        Her proje, benzersiz ve özel olarak tasarlanır.
+                    </p>
+                    <div class="features">
+                        <div class="feature">
+                            <span class="feature-icon">✨</span>
+                            <h3>Modern Tasarım</h3>
+                            <p>Güncel tasarım trendlerini takip ediyoruz</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📱</span>
+                            <h3>Responsive</h3>
+                            <p>Tüm cihazlarda mükemmel görünüm</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">⚡</span>
+                            <h3>Hızlı</h3>
+                            <p>Optimize edilmiş performans</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Hizmetlerimiz</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🌐</div>
+                    <h3>Web Tasarım</h3>
+                    <p>Modern ve kullanıcı dostu web siteleri tasarlıyoruz.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📱</div>
+                    <h3>Mobil Uygulama</h3>
+                    <p>iOS ve Android için native uygulamalar geliştiriyoruz.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>Web Geliştirme</h3>
+                    <p>Full-stack web uygulamaları ve API'ler oluşturuyoruz.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">İletişim</h2>
+            <div class="contact-content">
+                <form class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" placeholder="Adınız" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" placeholder="E-posta" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" name="message" placeholder="Mesajınız" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-button">Gönder</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Modern Web Sitesi. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
